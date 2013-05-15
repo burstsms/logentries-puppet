@@ -21,21 +21,34 @@ class logentries($account_key) {
 
   require logentries::dependencies
 
-  package { [ 'logentries', 'logentries-daemon' ]:
-    ensure  => latest,
+  Exec { path => ["/bin", "/usr/bin" ] }
+
+  package { 
+    'logentries':
+      ensure  => latest;
+    'logentries-daemon':
+      ensure  => latest,
+      require => [
+        Package['logentries'],
+        Exec['le_register']
+      ];
   }
 
   exec { 'le_register':
-    command => "/bin/le register --yes --account-key=${account_key}",
+    command => "le register --yes --account-key=${account_key}",
     creates => '/etc/le/config',
     require => Package['logentries'],
-    notify  => Service['logentries'],
   }
+
+  Exec['le_register'] -> Service['logentries']
 
   service { 'logentries':
     ensure     => running,
     enable     => true,
     hasrestart => true,
-    require    => Package['logentries-daemon'],
+    require    => [
+      Exec['le_register'],
+      Package['logentries-daemon']
+    ];
   }
 }

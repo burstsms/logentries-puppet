@@ -63,35 +63,18 @@ class logentries::dependencies {
         ensure => latest,
       }
 
-      file { '/etc/apt/trusted.gpg.d/logentries.gpg':
+      apt::key { 'Logentries.gpg':
         source => 'puppet:///modules/logentries/logentries.gpg',
-        notify => Exec['add-logentries-apt-key'],
+        keyid  => 'C43C79AD';
       }
 
-      exec { 'add-logentries-apt-key':
-        command     => 'apt-key add /etc/apt/trusted.gpg.d/logentries.gpg',
-        refreshonly => true,
-      }
-
-      file { '/etc/apt/sources.list.d/logentries.list':
-        ensure  => present,
-        content => template('logentries/apt_source.erb'),
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        require => [Package['apt-transport-https'],
-                    File['/etc/apt/trusted.gpg.d/logentries.gpg']],
-        notify  => Exec['apt-update']
-      }
-
-      exec { 'apt-update':
-        command     => '/usr/bin/apt-get update',
-        refreshonly => true,
+      apt::repository { 'logentries':
+        url => 'http://rep.logentries.com';
       }
 
       package { 'python-setproctitle':
         ensure  => latest,
-        require => Exec['apt-update']
+        require => Apt::Repository['logentries']
       }
     }
 
