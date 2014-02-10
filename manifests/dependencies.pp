@@ -63,18 +63,17 @@ class logentries::dependencies {
         ensure => latest,
       }
 
-      apt::key { 'Logentries.gpg':
-        source => 'puppet:///modules/logentries/logentries.gpg',
-        keyid  => 'C43C79AD';
-      }
-
-      apt::repository { 'logentries':
-        url => 'http://rep.logentries.com';
+      apt::source { 'logentries': 
+        location    => 'http://rep.logentries.com',
+        release     => 'precise',
+        repos       => 'main',
+        key         => 'C43C79AD',
+        key_server => 'pgp.mit.edu',
       }
 
       package { 'python-setproctitle':
         ensure  => latest,
-        require => Apt::Repository['logentries']
+        require => Apt::Soure['logentries']
       }
     }
 

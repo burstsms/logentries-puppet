@@ -2,3 +2,5 @@
 .cache
 .kitchen
 bin
+.tmp/
+modules/

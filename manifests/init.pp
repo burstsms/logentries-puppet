@@ -21,9 +21,9 @@ class logentries($account_key) {
 
   require logentries::dependencies
 
-  Exec { path => ["/bin", "/usr/bin" ] }
+  Exec { path => ['/bin', '/usr/bin' ] }
 
-  package { 
+  package {
     'logentries':
       ensure  => latest;
     'logentries-daemon':
