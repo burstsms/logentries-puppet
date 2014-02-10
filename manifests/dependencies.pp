@@ -35,20 +35,22 @@ class logentries::dependencies {
       }
 
       exec { 'import_key':
-        command     => "/bin/rpm --import $rpmkey",
+        command     => "/bin/rpm --import ${rpmkey}",
         subscribe   => File[$rpmkey],
         refreshonly => true,
       }
 
+      $baseurl = $::operatingsystem ? {
+        /(Fedora|fedora|RedHat|redhat|centos)/ => 'http://rep.logentries.com/rh/$basearch',
+        'Amazon'                               => "http://rep.logentries.com/$::{operatingsystemrelease}/\${basearch}",
+      }
+
       yumrepo { 'logentries':
-        descr    => "logentries $::operatingsystemrelease $::architecture Repository ",
-        enabled  => 1,
-        baseurl  => $::operatingsystem ? {
-          /(Fedora|fedora|RedHat|redhat|centos)/ =>  'http://rep.logentries.com/rh/$basearch',
-          'Amazon'                 =>  "http://rep.logentries.com/$::operatingsystemrelease/\$basearch",
-        },
-        gpgcheck => 1,
-        gpgkey   => 'http://rep.logentries.com/RPM-GPG-KEY-logentries',
+        descr       => "logentries $::{operatingsystemrelease} $::{architecture} Repository ",
+        enabled     => 1,
+        baseurl     => $baseurl,
+        gpgcheck    => 1,
+        gpgkey      => 'http://rep.logentries.com/RPM-GPG-KEY-logentries',
       }
 
       package { [ 'python-setproctitle', 'python-simplejson' ]:
@@ -63,17 +65,17 @@ class logentries::dependencies {
         ensure => latest,
       }
 
-      apt::source { 'logentries': 
+      apt::source { 'logentries':
         location    => 'http://rep.logentries.com',
         release     => 'precise',
         repos       => 'main',
         key         => 'C43C79AD',
-        key_server => 'pgp.mit.edu',
+        key_server  => 'pgp.mit.edu',
       }
 
       package { 'python-setproctitle':
         ensure  => latest,
-        require => Apt::Soure['logentries']
+        require => Apt::Source['logentries']
       }
     }
 
