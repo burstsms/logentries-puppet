@@ -71,6 +71,7 @@ class logentries::dependencies {
         repos       => 'main',
         key         => 'C43C79AD',
         key_server  => 'pgp.mit.edu',
+        include_src => false,
       }
 
       package { 'python-setproctitle':
