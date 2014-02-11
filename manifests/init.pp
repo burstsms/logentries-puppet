@@ -17,13 +17,13 @@
 # limitations under the License.
 #
 
-class logentries($account_key) {
+class logentries($account_key = '') {
 
   require logentries::dependencies
 
-  Exec { path => ["/bin", "/usr/bin" ] }
+  Exec { path => ['/bin', '/usr/bin' ] }
 
-  package { 
+  package {
     'logentries':
       ensure  => latest;
     'logentries-daemon':
@@ -38,9 +38,8 @@ class logentries($account_key) {
     command => "le register --yes --account-key=${account_key}",
     creates => '/etc/le/config',
     require => Package['logentries'],
+    notify  => Service['logentries'],
   }
-
-  Exec['le_register'] -> Service['logentries']
 
   service { 'logentries':
     ensure     => running,
