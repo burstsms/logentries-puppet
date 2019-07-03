@@ -69,9 +69,10 @@ class logentries::dependencies {
         location    => 'http://rep.logentries.com',
         release     => 'precise',
         repos       => 'main',
-        key         => 'C43C79AD',
-        key_server  => 'pgp.mit.edu',
-        include_src => false,
+        key      => {
+          'id'     => 'A5270289C43C79AD',
+          'server' => 'keyserver.ubuntu.com',
+        },
       }
 
       package { 'python-setproctitle':
